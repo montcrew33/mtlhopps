@@ -159,10 +159,38 @@ with st.sidebar:
     start_date = st.date_input("Date", datetime.date(2026, 1, 13), label_visibility="collapsed")
     
     st.divider()
-    st.markdown("### Alerts")
-    st.caption("Get notified about new runs.")
-    st.text_input("Email", placeholder="you@email.com")
-    st.button("Subscribe")
+    st.markdown("### 📩 Alerts")
+    st.caption("Get notified about new basketball sessions.")
+    
+    # Email subscription form using FormSubmit
+    with st.form("email_subscription", clear_on_submit=True):
+        email = st.text_input("Email", placeholder="you@email.com", label_visibility="collapsed")
+        submitted = st.form_submit_button("Subscribe", use_container_width=True)
+        
+        if submitted:
+            if email and "@" in email:
+                # Use FormSubmit to send email
+                import requests
+                
+                form_data = {
+                    'email': email,
+                    'message': f'New subscription to MTL Hoops alerts from: {email}',
+                    'subject': 'MTL Hoops - New Email Subscription',
+                    '_next': 'https://montcrew33-mtlhopps-app.streamlit.app',  # Redirect back to app
+                    '_captcha': 'false'  # Disable captcha for smoother UX
+                }
+                
+                try:
+                    # FormSubmit endpoint - replace with your email
+                    response = requests.post('https://formsubmit.co/montcrew33@gmail.com', data=form_data)
+                    if response.status_code == 200:
+                        st.success("✅ Subscribed! We'll notify you about new basketball sessions.")
+                    else:
+                        st.error("❌ Subscription failed. Please try again.")
+                except:
+                    st.error("❌ Connection error. Please try again later.")
+            else:
+                st.error("❌ Please enter a valid email address.")
 
 # --- MAIN CONTENT ---
 st.title("Montreal Open Gyms")
