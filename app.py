@@ -181,8 +181,8 @@ with st.sidebar:
                 }
                 
                 try:
-                    # FormSubmit endpoint - replace with your email
-                    response = requests.post('https://formsubmit.co/montcrew33@gmail.com', data=form_data)
+                    # TODO: Replace YOUR_EMAIL_HERE with your actual email address
+                    response = requests.post('https://formsubmit.co/YOUR_EMAIL_HERE@gmail.com', data=form_data)
                     if response.status_code == 200:
                         st.success("✅ Subscribed! We'll notify you about new basketball sessions.")
                     else:
