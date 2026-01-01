@@ -65,6 +65,22 @@ st.markdown("""
     /* Price Tag */
     .tag { background-color: #1E293B; color: #94A3B8; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; border: 1px solid #334155; }
     .tag.free { background-color: #064E3B; color: #34D399; border-color: #065F46; }
+    
+    /* Navigation Buttons */
+    div[data-testid="column"] button {
+        background-color: #1E293B !important;
+        color: #FF4B4B !important;
+        border: 1px solid #FF4B4B !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        transition: all 0.2s ease !important;
+    }
+    div[data-testid="column"] button:hover {
+        background-color: #FF4B4B !important;
+        color: white !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(255, 75, 75, 0.3) !important;
+    }
 
     header {visibility: hidden;} 
     .block-container { padding-top: 2rem !important; }
@@ -170,8 +186,31 @@ if st.checkbox("📱 Show Filters", help="Filter by neighborhood and type"):
                 else:
                     selected_sources.append(display_source)
 
-# Tabs for Next 7 Days
-week_days = [start_date + datetime.timedelta(days=i) for i in range(7)]
+# Week Navigation
+if 'week_offset' not in st.session_state:
+    st.session_state.week_offset = 0
+
+# Navigation controls
+nav_col1, nav_col2, nav_col3 = st.columns([1, 2, 1])
+
+with nav_col1:
+    if st.button("← Previous Week", key="prev_week"):
+        st.session_state.week_offset -= 7
+        st.rerun()
+
+with nav_col3:
+    if st.button("Next Week →", key="next_week"):
+        st.session_state.week_offset += 7
+        st.rerun()
+
+with nav_col2:
+    # Calculate current week range
+    current_start = start_date + datetime.timedelta(days=st.session_state.week_offset)
+    current_end = current_start + datetime.timedelta(days=6)
+    st.markdown(f"<div style='text-align: center; font-weight: 600; color: #FF4B4B; padding: 8px;'>{current_start.strftime('%b %d')} - {current_end.strftime('%b %d, %Y')}</div>", unsafe_allow_html=True)
+
+# Tabs for Current Week (7 days)
+week_days = [start_date + datetime.timedelta(days=i + st.session_state.week_offset) for i in range(7)]
 tabs = st.tabs([d.strftime("%a %d") for d in week_days])
 
 for i, day in enumerate(week_days):
