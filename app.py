@@ -66,7 +66,30 @@ st.markdown("""
     .tag { background-color: #1E293B; color: #94A3B8; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; border: 1px solid #334155; }
     .tag.free { background-color: #064E3B; color: #34D399; border-color: #065F46; }
 
-    header {visibility: hidden;} .block-container { padding-top: 2rem !important; }
+    header {visibility: hidden;} 
+    .block-container { padding-top: 2rem !important; }
+    
+    /* Mobile Sidebar Fix */
+    @media (max-width: 768px) {
+        .sidebar .sidebar-content {
+            width: 100% !important;
+        }
+        /* Make sidebar toggle more visible on mobile */
+        .sidebar-toggle {
+            background-color: #FF4B4B !important;
+            color: white !important;
+            border-radius: 8px !important;
+            padding: 8px 12px !important;
+            margin: 10px !important;
+            font-weight: bold !important;
+        }
+        /* Ensure filters are visible when sidebar is open */
+        section[data-testid="stSidebar"] {
+            min-width: 280px !important;
+            background-color: rgba(14, 17, 23, 0.95) !important;
+            backdrop-filter: blur(10px) !important;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -127,6 +150,25 @@ with st.sidebar:
 
 # --- MAIN CONTENT ---
 st.title("Montreal Open Gyms")
+
+# Mobile-friendly filters (shown only on mobile)
+if st.checkbox("📱 Show Filters", help="Filter by neighborhood and type"):
+    mobile_col1, mobile_col2 = st.columns(2)
+    with mobile_col1:
+        mobile_boroughs = st.multiselect("📍 Area", all_boroughs, key="mobile_boroughs")
+        if mobile_boroughs:
+            selected_boroughs = mobile_boroughs
+    with mobile_col2:
+        mobile_sources = st.multiselect("🏢 Type", display_sources, key="mobile_sources") 
+        if mobile_sources:
+            selected_display_sources = mobile_sources
+            # Convert mobile selections
+            selected_sources = []
+            for display_source in selected_display_sources:
+                if display_source == "City (Free)":
+                    selected_sources.append("City")
+                else:
+                    selected_sources.append(display_source)
 
 # Tabs for Next 7 Days
 week_days = [start_date + datetime.timedelta(days=i) for i in range(7)]
